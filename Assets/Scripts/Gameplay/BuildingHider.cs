@@ -1,0 +1,31 @@
+using UnityEngine;
+
+[RequireComponent(typeof(AlphaFader))]
+public class BuildingHider : MonoBehaviour
+{
+    [SerializeField] private float _zOffset;
+    private Player _player;
+    private AlphaFader _aphaFader;
+
+    void Start()
+    {
+        _aphaFader = GetComponent<AlphaFader>();
+        _player = PlayerSpawner.yourPlayer;
+    }
+
+    void Update()
+    {
+        if (_player != null)
+        {
+            if (_player.transform.position.z >= transform.position.z - _zOffset)
+            {
+                _aphaFader.FadeIn();
+            }
+            else
+            {
+                _aphaFader.FadeOut();
+            }
+        }
+        else _player = PlayerSpawner.yourPlayer;
+    }
+}
