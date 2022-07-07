@@ -3,39 +3,78 @@ using System.Collections;
 using UnityEngine.InputSystem;
 using Photon.Pun;
 
-public class Player : MonoBehaviour , IShootable
+public class PlayerChar : MonoBehaviourPunCallbacks, IShootable , IDamageable , IPunObservable
 {
     [SerializeField] private float _playerSpeed = 2.0f;
     [SerializeField] private float _gravityValue = -9.81f;
     [SerializeField] float _rotationSpeed = 10f;
     [SerializeField] Animator _animator;
     [SerializeField] private Gun _gun;
-    [SerializeField] private float _health;
+    [SerializeField] private GameObject _playerFollowerPrefab;
+    [SerializeField] private GameObject _cameraPrefab;
+    [SerializeField] private GameObject _playerUiPrefab;
     //[SerializeField] TrajectoryDrawer _trajectoryDrawer;
 
     private AimFocuser _focuser;
+    private PlayerUI _playerUI;
     private CharacterController _characterController;
     private Vector3 _playerVelocity;
     private Vector3 _lastLook;
     private bool _isGrounded;
     private bool _isShooting;
     private PlayerInput _playerInput;
-    private PhotonView _photonView;
+    private GameObject _follower;
+
+    public static PlayerChar LocalPlayerInstance;
+    public float Health;
+
+    public void Awake()
+    {
+        
+        if (photonView.IsMine)
+        {
+            _follower = Instantiate(this._playerFollowerPrefab);
+            _follower.transform.SetParent(this.transform ,false);
+
+            Instantiate(this._cameraPrefab).TryGetComponent<ObjectFollower>(out ObjectFollower cameraFollower);
+            cameraFollower.SetObjectToFollow(this.gameObject);
+
+            LocalPlayerInstance = this;
+        }
+        DontDestroyOnLoad(gameObject);
+    }
 
     private void Start()
     {
-        _photonView = GetComponent<PhotonView>();
         _characterController = GetComponent<CharacterController>();
         _playerInput = GetComponent<PlayerInput>();
         _focuser = GetComponent<AimFocuser>();
-        if (_photonView.IsMine) PlayerSpawner.yourPlayer = this;
-        else Destroy(_focuser);
+
+        if (!photonView.IsMine) _focuser.enabled = false;
+
+        if (this._playerUiPrefab != null)
+        {
+            Instantiate(this._playerUiPrefab).TryGetComponent<PlayerUI>(out PlayerUI playerUI);
+            _playerUI = playerUI;
+            _playerUI.SetTarget(this);
+            _playerUI.UpdateHealthData();
+        }
+        else
+        {
+            Debug.LogWarning("<Color=Red><b>Missing</b></Color> PlayerUiPrefab reference on player Prefab.", this);
+        }
     }
 
     void Update()
     {
-        if (!_photonView.IsMine) return;
+        if (photonView.IsMine)
+        {
+            this.ProcessInputs();
+        }
+    }
 
+    private void ProcessInputs()
+    {
         _isGrounded = _characterController.isGrounded;
         if (_isGrounded && _playerVelocity.y < 0)
         {
@@ -59,16 +98,16 @@ public class Player : MonoBehaviour , IShootable
             {
                 Shoot(_lastLook.normalized);
             }
-            else if (_focuser.HasTarget())
-            {
-                Shoot(_focuser.GetTargetPosition() - transform.position);
-            }
+           else if (_focuser.HasTarget())
+           {
+               Shoot(_focuser.GetTargetPosition() - transform.position);
+           }
             else Shoot(transform.forward);
         }
 
         _characterController.Move(move * Time.deltaTime * _playerSpeed);
 
-        if (move.magnitude > 0.1 && !_isShooting && look.magnitude < 0.1f)
+        if (move.magnitude > 0.1 && look.magnitude < 0.1f && !_isShooting) 
         {
             LookAtDirection(move, _rotationSpeed);
         }
@@ -94,7 +133,7 @@ public class Player : MonoBehaviour , IShootable
 
     private void Shoot(Vector3 shootDirection)
     {
-        StartCoroutine(ShootCoroutine(shootDirection));
+        if(!_isShooting)StartCoroutine(ShootCoroutine(shootDirection));
     }
 
     private IEnumerator ShootCoroutine(Vector3 shootDirection)
@@ -113,6 +152,29 @@ public class Player : MonoBehaviour , IShootable
 
     public bool IsAlive()
     {
-        return _health > 0;
+        return Health > 0;
+    }
+
+    public void TakeDamage(float damage)
+    {
+        Health -= damage;
+
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(this.Health);
+        }
+        else
+        {
+            this.Health = (float)stream.ReceiveNext();
+        }
+        if (this.Health <= 0)
+        {
+            gameObject.SetActive(false);
+        }
+        if(_playerUI != null)_playerUI.UpdateHealthData();
     }
 }

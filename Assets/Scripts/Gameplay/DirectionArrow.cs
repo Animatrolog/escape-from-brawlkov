@@ -3,9 +3,10 @@ using UnityEngine;
 
 public class DirectionArrow : MonoBehaviour
 {
-    [SerializeField] private PlayerInput _playerInput;
+    private PlayerInput _playerInput;
 
     private Vector3 _scaleOnStart;
+    private PlayerChar _player;
 
     private void Start()
     {
@@ -14,13 +15,19 @@ public class DirectionArrow : MonoBehaviour
 
     void Update()
     {
-        Vector2 moveInput = _playerInput.actions["Move"].ReadValue<Vector2>();
+        if (_player != null) {
 
-        if (moveInput.magnitude > 0)
-        {
-            transform.localScale = _scaleOnStart * moveInput.magnitude;
-            transform.forward = new Vector3(moveInput.x, 0f, moveInput.y);
+            _playerInput = _player.GetComponent<PlayerInput>();
+
+            Vector2 moveInput = _playerInput.actions["Move"].ReadValue<Vector2>();
+
+            if (moveInput.magnitude > 0)
+            {
+                transform.localScale = _scaleOnStart * moveInput.magnitude;
+                transform.forward = new Vector3(moveInput.x, 0f, moveInput.y);
+            }
+            else transform.localScale = _scaleOnStart * 0;
         }
-        else transform.localScale = _scaleOnStart * 0;
+        else _player = PlayerChar.LocalPlayerInstance;
     }
 }

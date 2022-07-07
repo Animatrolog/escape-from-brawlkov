@@ -5,24 +5,17 @@ using Photon.Pun;
 public class Building : MonoBehaviourPunCallbacks
 {
     [SerializeField] AlphaFader[] _objectsToHide;
-    private PhotonView _photonView;
-    private Player _player;
-    private int _hidebleLayer;
-
-    private void Awake()
-    {
-        _photonView = GetComponent<PhotonView>();
-    }
+    private PlayerChar _player;
 
     private void Update()
     {
         if (_player == null)
-            _player = PlayerSpawner.yourPlayer;
+            _player = PlayerChar.LocalPlayerInstance;
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent<Player>(out Player target))
+        if (other.TryGetComponent<PlayerChar>(out PlayerChar target))
         {
             other.gameObject.layer = LayerMask.NameToLayer("Hideble");
             ChangeChildsLayer(other.gameObject, LayerMask.NameToLayer("Hideble"));
@@ -36,7 +29,7 @@ public class Building : MonoBehaviourPunCallbacks
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent<Player>(out Player target))
+        if (other.TryGetComponent<PlayerChar>(out PlayerChar target))
         {
             other.gameObject.layer = 0;
             ChangeChildsLayer(other.gameObject, 0);

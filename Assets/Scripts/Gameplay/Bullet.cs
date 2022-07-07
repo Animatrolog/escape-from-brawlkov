@@ -3,8 +3,9 @@ using Photon.Realtime;
 
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] private float _speed = 5f;
-    public Photon.Realtime.Player Owner { get; private set; }
+    [SerializeField] private float _speed = 4f;
+    [SerializeField] private float _damage = 15f;
+    public Player Owner { get; private set; }
 
     public void Start()
     {
@@ -13,6 +14,10 @@ public class Bullet : MonoBehaviour
 
     public void OnCollisionEnter(Collision collision)
     {
+        if (collision.gameObject.TryGetComponent<IDamageable>(out IDamageable target))
+        {
+            target.TakeDamage(_damage);
+        }
         Destroy(gameObject);
     }
 
@@ -25,16 +30,5 @@ public class Bullet : MonoBehaviour
         Rigidbody rigidbody = GetComponent<Rigidbody>();
         rigidbody.velocity = originalDirection * _speed;
         rigidbody.position += rigidbody.velocity * lag;
-    }
-
-    private void OnTriggerEnter(Collider collider)
-    {
-        if (collider.TryGetComponent<IDamageable>(out IDamageable target))
-        {
-            target.TakeDamage(25f);
-            Destroy(gameObject);
-        }
-        if (collider.CompareTag("SolidObject"))
-            Destroy(gameObject);
     }
 }

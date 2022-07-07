@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class ObjectFollower : MonoBehaviour
 {
-   [SerializeField] private GameObject _target;
-   [SerializeField] private float _followSpeed;
-   [SerializeField] private bool _absolute;
+    [SerializeField] private GameObject _target;
+    [SerializeField] private float _followSpeed;
+    [SerializeField] private bool _applyOffset = true;
+    [SerializeField] private bool _absolute;
 
     private Vector3 _offset;
    
@@ -16,7 +17,7 @@ public class ObjectFollower : MonoBehaviour
    
     private void ResetOffset()
     {
-        _offset = transform.position - _target.transform.position;
+        if(_applyOffset)_offset = transform.position - _target.transform.position;
     }
 
     public void SetVisibility(bool visibility)

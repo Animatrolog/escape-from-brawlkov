@@ -3,20 +3,20 @@ using System.Collections.Generic;
 
 public class AimFocuser : MonoBehaviour
 {
-    [SerializeField] private ObjectFollower _targetMarker;
-
+    [SerializeField] private GameObject _targetPointerPrefab;
+    private ObjectFollower _targetPointer;
     private IShootable _target;
-    private List<IShootable> _targets;
+    private List<IShootable> _targets = new List<IShootable>();
 
     private void Start()
     {
-        _targets = new List<IShootable>();
+        _targetPointer = Instantiate(_targetPointerPrefab).GetComponent<ObjectFollower>();
     }
  
     private void Update()
     {
         Vector3 ofsetPosition = new Vector3(0f, 0.4f, 0f);
-        float minDistance = 999f;
+        float minDistance = float.MaxValue;
         List<IShootable> validTargets = new List<IShootable>();
 
         foreach (IShootable target in _targets)
@@ -47,7 +47,7 @@ public class AimFocuser : MonoBehaviour
 
         if(validTargets.Count < 1)
         {
-            _targetMarker.SetVisibility(false);
+            _targetPointer.gameObject.SetActive(false);
             _target = null;
             return;
         }
@@ -55,8 +55,8 @@ public class AimFocuser : MonoBehaviour
         foreach (IShootable target in validTargets)
         {
             var targetMB = target as MonoBehaviour;
-            float distanceFromTarget = Vector3.Distance(transform.position + ofsetPosition, targetMB.transform.position + ofsetPosition);
-            Vector3 direction = ((targetMB.transform.position + ofsetPosition) - (transform.position + ofsetPosition)).normalized;
+            Vector3 directionToTarget = ((targetMB.transform.position + ofsetPosition) - (transform.position + ofsetPosition));
+            float distanceFromTarget = directionToTarget.sqrMagnitude;
 
             if (minDistance > distanceFromTarget)
             {
@@ -72,13 +72,13 @@ public class AimFocuser : MonoBehaviour
             if (targetMB.isActiveAndEnabled)
             {
 
-                _targetMarker.SetObjectToFollow(targetMB.gameObject);
-                _targetMarker.SetVisibility(true);
+                _targetPointer.SetObjectToFollow(targetMB.gameObject);
+                _targetPointer.gameObject.SetActive(true);
             }
         }
         else
         {
-            _targetMarker.SetVisibility(false);
+            _targetPointer.gameObject.SetActive(false);
             _targets.Remove(_target);
             _target = null;
         }
@@ -86,10 +86,9 @@ public class AimFocuser : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        IShootable target = collider.GetComponent<IShootable>();
-        if (target != null)
+        if (collider.TryGetComponent<IShootable>(out IShootable target))
         {
-             _targets.Add(target);
+            _targets.Add(target);
         }
     }
 
@@ -97,15 +96,9 @@ public class AimFocuser : MonoBehaviour
     {
         if (collider.TryGetComponent<IShootable>(out IShootable target))
         {
-            RemoveFtomTargets(target);
+            _targets.Remove(target);
+           // _targetPointer.gameObject.SetActive(false);
         }
-    }
-
-    private void RemoveFtomTargets(IShootable target)
-    {
-        _targets.Remove(target);
-        _targetMarker.SetVisibility(false);
-        _target = null;
     }
 
     public bool HasTarget()
