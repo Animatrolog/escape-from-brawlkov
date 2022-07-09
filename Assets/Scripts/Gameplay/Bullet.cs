@@ -25,10 +25,22 @@ public class Bullet : MonoBehaviour
     {
         Owner = owner;
 
+        RaycastHit hit;
         transform.forward = originalDirection;
-
         Rigidbody rigidbody = GetComponent<Rigidbody>();
         rigidbody.velocity = originalDirection * _speed;
-        rigidbody.position += rigidbody.velocity * lag;
+
+        if (Physics.Raycast(transform.position, originalDirection, out hit))/// костыль от пролетания пуль через стены
+        {
+            if (hit.distance < 0.7f)
+            {
+                rigidbody.position += rigidbody.velocity * lag * 0.15f;
+            }
+            else rigidbody.position += rigidbody.velocity * lag;
+
+            Debug.DrawRay(transform.position, originalDirection * hit.distance);
+        }
+        else rigidbody.position += rigidbody.velocity * lag;
+
     }
 }

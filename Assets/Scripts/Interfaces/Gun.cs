@@ -1,8 +1,7 @@
 
-using System.Collections;
-using UnityEngine;
+using Photon.Pun;
 
-abstract class Gun : MonoBehaviour
+abstract class Gun : MonoBehaviourPunCallbacks
 {
     public abstract bool IsShooting { get; private protected set;}
 

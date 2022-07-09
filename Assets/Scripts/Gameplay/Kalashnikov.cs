@@ -7,14 +7,8 @@ class Kalashnikov : Gun
     [SerializeField] private GameObject _bulletPrefab;
     [SerializeField] private int _numberOfShots;
     [SerializeField] private float _dispersion;
-    private PhotonView _photonView;
 
     public override bool IsShooting { get; private protected set; }
-
-    private void Awake()
-    {
-        _photonView = GetComponent<PhotonView>();
-    }
 
     public override void Reload()
     {
@@ -35,7 +29,7 @@ class Kalashnikov : Gun
             for (int i = 0; i < numberOfShots; i++)
             {
                 var randomDispersion = Quaternion.Euler(0f, Random.Range(-_dispersion, _dispersion), 0f);
-                _photonView.RPC("Fire", RpcTarget.AllViaServer, transform.position, transform.rotation * randomDispersion);
+                photonView.RPC("Fire", RpcTarget.AllViaServer, transform.position, transform.rotation * randomDispersion);
                 yield return new WaitForSeconds(0.1f);
             }
             IsShooting = false;
@@ -47,10 +41,9 @@ class Kalashnikov : Gun
     {
         float lag = (float)(PhotonNetwork.Time - info.SentServerTime);
         GameObject bullet;
-
+        
         bullet = Instantiate(_bulletPrefab, position, Quaternion.identity) as GameObject;
-        bullet.GetComponent<Bullet>().InitializeBullet(_photonView.Owner, (rotation * Vector3.forward), Mathf.Abs(lag));
-
+        bullet.GetComponent<Bullet>().InitializeBullet(photonView.Owner, (rotation * Vector3.forward), Mathf.Abs(lag));
     }
 
 }

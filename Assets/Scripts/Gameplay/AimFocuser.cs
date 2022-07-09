@@ -22,24 +22,27 @@ public class AimFocuser : MonoBehaviour
         foreach (IShootable target in _targets)
         {
             var targetMB = target as MonoBehaviour;
-            Vector3 direction = ((targetMB.transform.position + ofsetPosition) - (transform.position + ofsetPosition)).normalized;
-            Ray aimRay = new Ray(transform.position + ofsetPosition, direction);
-            RaycastHit hit;
-
-            Debug.DrawRay(transform.position + ofsetPosition, direction * 15f);
-
-            if (Physics.Raycast(aimRay, out hit))
+            if (targetMB != null )
             {
-                if (hit.collider.TryGetComponent<IShootable>(out IShootable visibleTarget))
+                Vector3 direction = ((targetMB.transform.position + ofsetPosition) - (transform.position + ofsetPosition)).normalized;
+                Ray aimRay = new Ray(transform.position + ofsetPosition, direction);
+                RaycastHit hit;
+
+
+
+                if (Physics.Raycast(aimRay, out hit))
                 {
-                    if (hit.collider.GetComponent<IShootable>() == target)
+                    if (hit.collider.TryGetComponent<IShootable>(out IShootable visibleTarget))
                     {
-                        validTargets.Add(target);
+                        if (hit.collider.GetComponent<IShootable>() == target)
+                        {
+                            validTargets.Add(target);
+                        }
                     }
-                }
-                else
-                {
-                    validTargets.Remove(target);
+                    else
+                    {
+                        validTargets.Remove(target);
+                    }
                 }
             }
 
@@ -54,14 +57,17 @@ public class AimFocuser : MonoBehaviour
 
         foreach (IShootable target in validTargets)
         {
-            var targetMB = target as MonoBehaviour;
-            Vector3 directionToTarget = ((targetMB.transform.position + ofsetPosition) - (transform.position + ofsetPosition));
-            float distanceFromTarget = directionToTarget.sqrMagnitude;
-
-            if (minDistance > distanceFromTarget)
+            if (target != null)
             {
-                minDistance = distanceFromTarget;
-                _target = target;
+                var targetMB = target as MonoBehaviour;
+                Vector3 directionToTarget = ((targetMB.transform.position + ofsetPosition) - (transform.position + ofsetPosition));
+                float distanceFromTarget = directionToTarget.sqrMagnitude;
+
+                if (minDistance > distanceFromTarget)
+                {
+                    minDistance = distanceFromTarget;
+                    _target = target;
+                }
             }
         }
 

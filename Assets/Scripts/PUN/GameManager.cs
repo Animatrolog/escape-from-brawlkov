@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 		// in case we started this demo with the wrong scene being active, simply load the menu scene
 		if (!PhotonNetwork.IsConnected)
 		{
-			SceneManager.LoadScene("PunBasics-Launcher");
+			PhotonNetwork.LoadLevel("Menu");
 
 			return;
 		}
@@ -102,7 +102,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 	/// </summary>
 	public override void OnLeftRoom()
 	{
-		SceneManager.LoadScene("PunBasics-Launcher");
+		PhotonNetwork.LoadLevel("Menu");
 	}
 
 	#endregion
@@ -130,7 +130,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 			Debug.LogError( "PhotonNetwork : Trying to Load a level but we are not the master Client" );
 		}
 
-		//PhotonNetwork.LoadLevel("PunBasics-Room for "+PhotonNetwork.CurrentRoom.PlayerCount);
 	}
 
 	#endregion

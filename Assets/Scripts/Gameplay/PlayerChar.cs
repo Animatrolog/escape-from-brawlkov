@@ -33,6 +33,7 @@ public class PlayerChar : MonoBehaviourPunCallbacks, IShootable , IDamageable , 
         
         if (photonView.IsMine)
         {
+            //this.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
             _follower = Instantiate(this._playerFollowerPrefab);
             _follower.transform.SetParent(this.transform ,false);
 
@@ -174,6 +175,7 @@ public class PlayerChar : MonoBehaviourPunCallbacks, IShootable , IDamageable , 
         if (this.Health <= 0)
         {
             gameObject.SetActive(false);
+            GameManager.Instance.LeaveRoom();
         }
         if(_playerUI != null)_playerUI.UpdateHealthData();
     }
