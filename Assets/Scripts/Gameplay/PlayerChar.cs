@@ -18,7 +18,7 @@ public class PlayerChar : MonoBehaviourPunCallbacks, IShootable , IDamageable , 
     private AimFocuser _focuser;
     private PlayerUI _playerUI;
     private CharacterController _characterController;
-    private Vector3 _playerVelocity;
+    public Vector3 PlayerVelocity;
     private Vector3 _lastLook;
     private bool _isGrounded;
     private bool _isShooting;
@@ -27,6 +27,7 @@ public class PlayerChar : MonoBehaviourPunCallbacks, IShootable , IDamageable , 
 
     public static PlayerChar LocalPlayerInstance;
     public float Health;
+    public Vector3 Velocity;
 
     public void Awake()
     {
@@ -50,7 +51,7 @@ public class PlayerChar : MonoBehaviourPunCallbacks, IShootable , IDamageable , 
         _characterController = GetComponent<CharacterController>();
         _playerInput = GetComponent<PlayerInput>();
         _focuser = GetComponent<AimFocuser>();
-
+        _gun.OwnerChar = this;
         if (!photonView.IsMine) _focuser.enabled = false;
 
         if (this._playerUiPrefab != null)
@@ -62,9 +63,10 @@ public class PlayerChar : MonoBehaviourPunCallbacks, IShootable , IDamageable , 
         }
         else
         {
-            Debug.LogWarning("<Color=Red><b>Missing</b></Color> PlayerUiPrefab reference on player Prefab.", this);
+            //Debug.LogWarning("<Color=Red><b>Missing</b></Color> PlayerUiPrefab reference on player Prefab.", this);
         }
     }
+
 
     void Update()
     {
@@ -77,9 +79,9 @@ public class PlayerChar : MonoBehaviourPunCallbacks, IShootable , IDamageable , 
     private void ProcessInputs()
     {
         _isGrounded = _characterController.isGrounded;
-        if (_isGrounded && _playerVelocity.y < 0)
+        if (_isGrounded && PlayerVelocity.y < 0)
         {
-            _playerVelocity.y = 0f;
+            PlayerVelocity.y = 0f;
         }
 
         Vector2 moveInput = _playerInput.actions["Move"].ReadValue<Vector2>();
@@ -115,11 +117,13 @@ public class PlayerChar : MonoBehaviourPunCallbacks, IShootable , IDamageable , 
 
         var normalisedVelocity = Quaternion.Inverse(transform.rotation) * (_characterController.velocity / _playerSpeed);
 
+        Velocity = _characterController.velocity;
+
         _animator.SetFloat("SpeedY", normalisedVelocity.z);
         _animator.SetFloat("SpeedX", normalisedVelocity.x);
 
-        _playerVelocity.y += _gravityValue * Time.deltaTime;
-        _characterController.Move(_playerVelocity * Time.deltaTime);
+        PlayerVelocity.y += _gravityValue * Time.deltaTime;
+        _characterController.Move(PlayerVelocity * Time.deltaTime);
 
         _lastLook = look;
     }
@@ -136,7 +140,7 @@ public class PlayerChar : MonoBehaviourPunCallbacks, IShootable , IDamageable , 
     {
         if(!_isShooting)StartCoroutine(ShootCoroutine(shootDirection));
     }
-
+  
     private IEnumerator ShootCoroutine(Vector3 shootDirection)
     {
         _isShooting = true;

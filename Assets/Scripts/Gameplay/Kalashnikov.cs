@@ -10,6 +10,7 @@ class Kalashnikov : Gun
 
     public override bool IsShooting { get; private protected set; }
 
+
     public override void Reload()
     {
     }
@@ -40,10 +41,11 @@ class Kalashnikov : Gun
     public void Fire(Vector3 position, Quaternion rotation, PhotonMessageInfo info)
     {
         float lag = (float)(PhotonNetwork.Time - info.SentServerTime);
-        GameObject bullet;
-        
-        bullet = Instantiate(_bulletPrefab, position, Quaternion.identity) as GameObject;
-        bullet.GetComponent<Bullet>().InitializeBullet(photonView.Owner, (rotation * Vector3.forward), Mathf.Abs(lag));
+
+        GameObject bulletGO = Instantiate(_bulletPrefab, position, Quaternion.identity) as GameObject;
+        Bullet bullet  = bulletGO.GetComponent<Bullet>();
+        bullet.SetOwner(OwnerChar);
+        bullet.InitializeBullet(photonView.Owner, (rotation * Vector3.forward), Mathf.Abs(lag));
     }
 
 }

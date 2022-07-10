@@ -42,18 +42,18 @@ public class GameManager : MonoBehaviourPunCallbacks
 		}
 		if (playerPrefab == null) { // #Tip Never assume public properties of Components are filled up properly, always check and inform the developer of it.
 
-			Debug.LogError("<Color=Red><b>Missing</b></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
+			//Debug.LogError("<Color=Red><b>Missing</b></Color> playerPrefab Reference. Please set it up in GameObject 'Game Manager'", this);
 		} else {
 
 			if (PlayerChar.LocalPlayerInstance==null)
 			{
-				Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
+				//Debug.LogFormat("We are Instantiating LocalPlayer from {0}", SceneManagerHelper.ActiveSceneName);
 
 				// we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
 				PhotonNetwork.Instantiate(this.playerPrefab.name, new Vector3(0f,0f,0f), Quaternion.identity, 0);
 			}else{
 
-				Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
+				//Debug.LogFormat("Ignoring scene load for {0}", SceneManagerHelper.ActiveSceneName);
 			}
 
 
@@ -71,11 +71,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     /// <param name="other">Other.</param>
     public override void OnPlayerEnteredRoom( Player other  )
 	{
-		Debug.Log( "OnPlayerEnteredRoom() " + other.NickName); // not seen if you're the player connecting
+		//Debug.Log( "OnPlayerEnteredRoom() " + other.NickName); // not seen if you're the player connecting
 
 		if ( PhotonNetwork.IsMasterClient )
 		{
-			Debug.LogFormat( "OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient ); // called before OnPlayerLeftRoom
+			//Debug.LogFormat( "OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient ); // called before OnPlayerLeftRoom
 
 			LoadArena();
 		}
@@ -87,11 +87,11 @@ public class GameManager : MonoBehaviourPunCallbacks
 	/// <param name="other">Other.</param>
 	public override void OnPlayerLeftRoom( Player other  )
 	{
-		Debug.Log( "OnPlayerLeftRoom() " + other.NickName ); // seen when other disconnects
+		//Debug.Log( "OnPlayerLeftRoom() " + other.NickName ); // seen when other disconnects
 
 		if ( PhotonNetwork.IsMasterClient )
 		{
-			Debug.LogFormat( "OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient ); // called before OnPlayerLeftRoom
+			//Debug.LogFormat( "OnPlayerEnteredRoom IsMasterClient {0}", PhotonNetwork.IsMasterClient ); // called before OnPlayerLeftRoom
 
 			LoadArena(); 
 		}
@@ -127,7 +127,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 	{
 		if ( ! PhotonNetwork.IsMasterClient )
 		{
-			Debug.LogError( "PhotonNetwork : Trying to Load a level but we are not the master Client" );
+			//Debug.LogError( "PhotonNetwork : Trying to Load a level but we are not the master Client" );
 		}
 
 	}

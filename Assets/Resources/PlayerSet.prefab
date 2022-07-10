@@ -111,7 +111,9 @@ MonoBehaviour:
   _cameraPrefab: {fileID: 3639888175326671806, guid: 3ced8d2d91a83604fa8354fe7aac4819,
     type: 3}
   _playerUiPrefab: {fileID: 170056, guid: bbe6ebd4ad2a55d4ca4e95e1bbcbd483, type: 3}
+  PlayerVelocity: {x: 0, y: 0, z: 0}
   Health: 100
+  Velocity: {x: 0, y: 0, z: 0}
 --- !u!135 &1374856974258609343
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -240,7 +242,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7003428754401057872}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.243, y: 0.81701267, z: 0.228}
+  m_LocalPosition: {x: 0.243, y: 0.81701267, z: 0.179}
   m_LocalScale: {x: 1.8661264, y: 0.9615946, z: 0.9615946}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -311,6 +313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2826870553f548d48b53a99f715b31f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OwnerChar: {fileID: 0}
   _bulletPrefab: {fileID: 2916749683257220599, guid: 5f025a6fb682b9343a75f4eeff143234,
     type: 3}
   _numberOfShots: 3

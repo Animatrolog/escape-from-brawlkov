@@ -17,7 +17,6 @@ public class BuildingHider : MonoBehaviour
     {
         if (_player != null)
         {
-            Debug.Log("its happening");
             if (_player.transform.position.z >= transform.position.z - _zOffset)
             {
                 _aphaFader.FadeIn();
