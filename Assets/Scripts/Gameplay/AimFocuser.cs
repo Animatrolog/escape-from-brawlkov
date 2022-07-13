@@ -25,12 +25,8 @@ public class AimFocuser : MonoBehaviour
             if (targetMB != null )
             {
                 Vector3 direction = ((targetMB.transform.position + ofsetPosition) - (transform.position + ofsetPosition)).normalized;
-                Ray aimRay = new Ray(transform.position + ofsetPosition, direction);
-                RaycastHit hit;
 
-
-
-                if (Physics.Raycast(aimRay, out hit))
+                if (Physics.Raycast(transform.position + ofsetPosition, direction, out RaycastHit hit))
                 {
                     if (hit.collider.TryGetComponent<IShootable>(out IShootable visibleTarget))
                     {

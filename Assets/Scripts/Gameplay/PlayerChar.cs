@@ -24,6 +24,7 @@ public class PlayerChar : MonoBehaviourPunCallbacks, IShootable , IDamageable , 
     private bool _isShooting;
     private PlayerInput _playerInput;
     private GameObject _follower;
+    private UIhider _uiHider;
 
     public static PlayerChar LocalPlayerInstance;
     public float Health;
@@ -51,8 +52,14 @@ public class PlayerChar : MonoBehaviourPunCallbacks, IShootable , IDamageable , 
         _characterController = GetComponent<CharacterController>();
         _playerInput = GetComponent<PlayerInput>();
         _focuser = GetComponent<AimFocuser>();
+        _uiHider = GetComponent<UIhider>();
         _gun.OwnerChar = this;
-        if (!photonView.IsMine) _focuser.enabled = false;
+
+        if (!photonView.IsMine)
+        {
+            _uiHider.enabled = false;
+            _focuser.enabled = false;
+        }
 
         if (this._playerUiPrefab != null)
         {
@@ -182,5 +189,10 @@ public class PlayerChar : MonoBehaviourPunCallbacks, IShootable , IDamageable , 
             GameManager.Instance.LeaveRoom();
         }
         if(_playerUI != null)_playerUI.UpdateHealthData();
+    }
+    public void HideUI(bool hide)
+    {
+        if(!photonView.IsMine)_playerUI.gameObject.SetActive(hide ? false : true);
+        //Debug.Log("HideUI => " + hide);
     }
 }

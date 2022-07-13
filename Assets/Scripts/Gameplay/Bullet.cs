@@ -7,8 +7,8 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float _damage = 15f;
     
     public Player Owner { get; private set; }
-    private PlayerChar _ownerChar;
 
+    private PlayerChar _ownerChar;
     private Collider _collider;
 
     private void Awake()

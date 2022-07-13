@@ -18,6 +18,7 @@ public class Building : MonoBehaviourPunCallbacks
         if (other.TryGetComponent<PlayerChar>(out PlayerChar target))
         {
             other.gameObject.layer = LayerMask.NameToLayer("Hideble");
+            //target.HideUI(true);
             ChangeChildsLayer(other.gameObject, LayerMask.NameToLayer("Hideble"));
             if (target != _player) return;
             foreach (AlphaFader objectToHide in _objectsToHide)
@@ -32,6 +33,7 @@ public class Building : MonoBehaviourPunCallbacks
         if (other.TryGetComponent<PlayerChar>(out PlayerChar target))
         {
             other.gameObject.layer = 0;
+            //target.HideUI(false);
             ChangeChildsLayer(other.gameObject, 0);
             if (target != _player) return;
             foreach (AlphaFader objectToHide in _objectsToHide)
